@@ -1,16 +1,25 @@
 var moment = require('moment');
 var mongoose = require('mongoose'),
 BloodGlucose = mongoose.model('BloodGlucose');
+ChatBotMessage = mongoose.model('ChatBotMessage');
+
+var recordChatBotMessage = function(req){
+    console.log(req.body);
+    var message = new ChatBotMessage(req.body);
+    message.save(function(err, task) {
+    });
+}
 
 // AVG MIN MAX
 exports.getInsights = function(req, res) {
+    recordChatBotMessage(req);
     BloodGlucose.aggregate([
     {$match: {userId: req.body.user_id, date: query(req)}},
         {$group: {_id: '$userId', average: {$avg: '$glucose'}, min: {$min: '$glucose'}, max: {$max: '$glucose'}}}
     ], function (err, result) {
         var message = 'No results found';
         if(result.length > 0){
-            message = "average: " + result[0].average + " max: " + result[0].max + " min: " + result[0].min + " if you would like to send me a reading now just type it in and send it to me for processing"
+            message = "average: " + result[0].average.toFixed(1) + "\nmax: " + result[0].max.toFixed(1) + "\nmin: " + result[0].min.toFixed(1)
         }
         var chatbotResponse = {
             message: message,
@@ -24,13 +33,14 @@ exports.getInsights = function(req, res) {
 
 // LOWS 
 exports.getHypos = function(req, res) {
+    recordChatBotMessage(req);
     BloodGlucose.aggregate([
         {$match: {userId: req.body.user_id, date: query(req), glucose: {$lt : 4}}},
         {$group: {_id: '$userId', count: {$sum: 1}}}
     ], function (err, result) {
         var message = 'No hypos found';
         if(result.length > 0){
-            message = "You have had: " + result[0].count + "  hypos. If you would like to send me a reading now just type it in and send it to me for processing"
+            message = "You have had: " + result[0].count + "  hypos."
         }
         var chatbotResponse = {
             message: message,
@@ -44,13 +54,14 @@ exports.getHypos = function(req, res) {
 
   // HIGHS
   exports.getHighs = function(req, res) {
+    recordChatBotMessage(req);
     BloodGlucose.aggregate([
         {$match: {userId: req.body.user_id, date: query(req), glucose: {$gt : 10}}},
         {$group: {_id: '$userId', count: {$sum: 1}}}
     ], function (err, result) {
         var message = 'No highs found';
         if(result.length > 0){
-            message = "You have had: " + result[0].count + "  highs. If you would like to send me a reading now just type it in and send it to me for processing"
+            message = "You have had: " + result[0].count + "  highs."
         }
         var chatbotResponse = {
             message: message,
@@ -64,8 +75,9 @@ exports.getHypos = function(req, res) {
 
  // Dump of last 24 of readings
   exports.getReadings = function(req, res) {
+    recordChatBotMessage(req);
     BloodGlucose.find(
-        { date: {$gte: moment().subtract(30,'days').toDate()}}
+        { date: {$gte: moment().subtract(1,'days').toDate()}}
     , function (err, result) {
         var message = 'No results found';
         
