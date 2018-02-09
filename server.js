@@ -1,6 +1,6 @@
 var express = require('express'),
   app = express(),
-  port = process.env.PORT || 3004,
+  port = process.env.PORT || 3005,
   mongoose = require('mongoose'),
   BloodGlucose = require('./api/models/bloodGlucoseModel'), //created model loading here
   ChatBotMessage = require('./api/models/chatbotMessage'),
@@ -14,11 +14,14 @@ mongoose.connect('mongodb://localhost/Diabetesdb');
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
+// serve the static chart images
+app.use(express.static('public'));
+
 // Add headers
 app.use(function (req, res, next) {
 
   // Website you wish to allow to connect
-  res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3001');
+  res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3002');
 
   // Request methods you wish to allow
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');

@@ -2,6 +2,7 @@
 module.exports = function(app) {
   var bloodGlucose = require('../controllers/bloodGlucoseController');
   var insights = require('../controllers/insightsController');
+  var reports = require('../controllers/reportController');
 
   app.route('/insights')
     .post(insights.getInsights);
@@ -11,6 +12,12 @@ module.exports = function(app) {
     .post(insights.getHypos);
   app.route('/highs')
     .post(insights.getHighs);
+
+  app.route('/report')
+    .post(reports.getChart);
+
+  app.route('/report/averages')
+    .get(reports.getAverages);
 
   app.route('/bloodGlucose')
     .get(bloodGlucose.getBloodGlucoseReadings)
