@@ -22,7 +22,6 @@ Run it
 node server
 ```
 
-End with an example of getting some data out of the system or using it for a little demo
 
 ## Built With
 
@@ -33,8 +32,6 @@ End with an example of getting some data out of the system or using it for a lit
 * [JSDom](https://github.com/jsdom/jsdom) - A JavaScript implementation of the WHATWG DOM and HTML standards, for use with node.js
 * [MomentJS](https://momentjs.com/) - Parse, validate, manipulate, and display dates and times in JavaScript.
 * [Mongoose](http://mongoosejs.com/) - elegant mongodb object modeling for node.js.
-
-
 
 
 ## Contributing
@@ -51,4 +48,4 @@ V1
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
+This project is licensed under the MIT License - TODO add link to license
