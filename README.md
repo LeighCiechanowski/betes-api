@@ -1,4 +1,4 @@
-# Project Title
+# Betes-Bot Chat Bot API
 
 Betes Bot is a chatbot service that aims to help diabetics manage their condition. Betes Bot will accept a users glucose readings and provide informative insights into that data.
 
