@@ -2,10 +2,6 @@
 
 Betes Bot is a chatbot service that aims to help diabetics manage their condition. Betes Bot will accept a users glucose readings and provide informative insights into that data.
 
-### Prerequisites
-
-What things you need to install the software and how to install them
-
 ### Installing
 
 Install packages
