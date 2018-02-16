@@ -2,28 +2,19 @@ var moment = require('moment');
 var mongoose = require('mongoose');
 var config = require('../config/index')
 BloodGlucose = mongoose.model('BloodGlucose');
-
-exports.getAverages = function(req, res) {
-    BloodGlucose.aggregate([
-        {$match: {userId: req.body.user_id}},
-        {$group: {_id: { $dateToString: { format: "%Y-%m-%d", date: '$date'} }, value: {$avg: '$glucose'}}},
-        { $project: { _id: 0, x: "$_id", value: "$value"}}
-    ], function (err, result) {
-        res.json(result);
-    });
-  };
+var replyMessage = '';
 
   exports.getChart = function(req, res) {
     BloodGlucose.aggregate([
         {$match: {userId: req.body.user_id, date: query(req)}},
         {$group: group(req)},
-        {$project: { _id: 0, x: "$_id", value: "$value"}},
+        {$project: { _id: 0, x: "$_id", value: "$value", normal: { fill: { $cond: { if: { $gte: ["$value", 10]}, then: '#f43059', else: '#45d1b4' }}, stroke: null}}},
         {$sort: { x: 1}}
         ], function (err, result) {
             genChart(req, result);
 
             var chatbotResponse = {
-                message: 'Here you go',
+                message: 'here you go',
                 suggested_replies: [],
                 blocked_input: null,
                 cards: [
@@ -61,33 +52,38 @@ genChart = function(req, result){
 
     // create and a chart to the jsdom window.
     // chart creating should be called only right after anychart-nodejs module requiring
-    // todo 03a9f4 bar 
     var chart = anychart.column(result);
+ 
+    chart.background().stroke(null);
     chart.bounds(0, 0, /*1920, 1080*/ 800, 600);
     chart.container('container');
     chart.labels(true);
-    
+ 
     var xlabels = chart.xAxis().labels();
     xlabels.fontSize(40);
+    xlabels.fontColor('black');
  
     var seriesLabels = chart.labels();
     seriesLabels.fontSize(40);
+    seriesLabels.fontColor('black');
 
     var ylabels = chart.yAxis().labels();
     ylabels.enabled(false);
 
     var highMarker = chart.lineMarker(0);
-    highMarker.axis(chart.yAxis());
+    //highMarker.axis(chart.yAxis());
     highMarker.value(10);
     highMarker.stroke({
-        color: '#e91e63'
+        color: '#f43059',
+        thickness: 4
     })
 
     var lowMarker = chart.lineMarker(1);
-    lowMarker.axis(chart.yAxis());
+    //lowMarker.axis(chart.yAxis());
     lowMarker.value(4);
     lowMarker.stroke({
-        color: '#18ffff'
+        color: '#45d1b4',
+        thickness: 4
     })
 
 
@@ -107,18 +103,23 @@ genChart = function(req, result){
 
 query = function(req) {
     if(req.body.incoming_message.indexOf('today') !== -1){
+      replyMessage = 'Here are your readings for today';
       return {$gte: moment().subtract(1,'days').endOf('day').toDate()};
     }
     if(req.body.incoming_message.indexOf('yesterday') !== -1){
+      replyMessage = 'Here are your readings for yesterday';
       return {$gte: moment().subtract(1,'days').startOf('day').toDate(), $lte: moment().subtract(1,'days').endOf('day').toDate()};
     }
     if(req.body.incoming_message.indexOf('week') !== -1){
+      replyMessage = 'Here are your daily averages for the week';
       return {$gte: moment().subtract(7,'days').startOf('day').toDate()};
     }
     if(req.body.incoming_message.indexOf('month') !== -1){
+      replyMessage = 'Here are your daily averages for the month';
       return {$gte: moment().subtract(28,'days').startOf('day').toDate()};
     }
     if(req.body.incoming_message.indexOf('year') !== -1){
+      replyMessage = 'Here are your yearly averages';
       return {$gte: moment().subtract(365,'days').startOf('day').toDate()};
     }
 }

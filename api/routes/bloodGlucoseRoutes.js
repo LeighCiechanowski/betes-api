@@ -16,9 +16,6 @@ module.exports = function(app) {
   app.route('/report')
     .post(reports.getChart);
 
-  app.route('/report/averages')
-    .get(reports.getAverages);
-
   app.route('/bloodGlucose')
     .get(bloodGlucose.getBloodGlucoseReadings)
     .post(bloodGlucose.createBloodGlucose);

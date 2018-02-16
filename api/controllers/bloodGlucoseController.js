@@ -28,14 +28,14 @@ exports.createChatbotBloodGlucose = function(req, res) {
     glucose: req.body.incoming_message,
     date: new Date()
   }
-console.log(bloodGlucose);
+
   var newReading = new BloodGlucose(bloodGlucose);
   newReading.save(function(err, task) {
     if (err){
       res.send(err);
     }
     var chatbotResponse = {
-      message: "Thank you, would you like to know some insights into your diabetes data?",
+      message: "Thank you",
       suggested_replies: null,
       blocked_input: null,
       cards: null
